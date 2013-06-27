@@ -144,6 +144,9 @@ class FakeEtherpad(object):
     def getHTML(self, padID=None):
         return self.pads.get(padID, None)
 
+    def listPads(self, groupID=None):
+        return None
+
 
 class FakePortalState(object):
     def __init__(self):
