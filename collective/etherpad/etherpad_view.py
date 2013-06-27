@@ -13,6 +13,7 @@ from Products.CMFCore.utils import getToolByName
 from urllib import urlencode
 from Products.CMFPlone import PloneMessageFactory
 from Products.CMFCore.utils import _checkPermission
+from Products.statusmessages.interfaces import IStatusMessage
 
 logger = logging.getLogger('collective.etherpad')
 _ = i18nmessageid.MessageFactory('collective.etherpad')
@@ -74,7 +75,14 @@ class EtherpadView(BrowserView):
         if self.etherpad is None:
             self.etherpad = HTTPAPI(self.context, self.request)
             self.etherpad.update()
-            self.etherpad.checkToken()
+            try:
+                self.etherpad.checkToken()
+            except ValueError:
+                status = IStatusMessage(self.request)
+                msg = _(u"Etherpad connection error")
+                status.add(msg)
+                self.etherpad_iframe_url = ""
+                return
         if self.padName is None:
             self.padName = IUUID(self.context)
             logger.debug('set padName to %s' % self.padName)
