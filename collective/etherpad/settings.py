@@ -1,21 +1,22 @@
 from zope import schema
 from zope import interface
+from collective.etherpad import _
 
 
 class EtherpadSettings(interface.Interface):
     """This is the schema for etherpad service configuration"""
 
     basepath = schema.ASCIILine(
-        title=u"Etherpad PATH",
+        title=_(u"Etherpad PATH"),
         default="/pad/",
     )
 
     apiversion = schema.ASCIILine(
-        title=u"Etherpad API PATH",
+        title=_(u"Etherpad API PATH"),
         default="1.2",
     )
 
-    apikey = schema.TextLine(title=u"API KEY")
+    apikey = schema.TextLine(title=_(u"API KEY"))
 
 
 class EtherpadEmbedSettings(interface.Interface):
