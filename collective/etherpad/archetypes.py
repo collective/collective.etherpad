@@ -23,9 +23,10 @@ from Products.CMFPlone import PloneMessageFactory
 from collective.etherpad.api import HTTPAPI
 from collective.etherpad.settings import EtherpadEmbedSettings, EtherpadSettings
 from plone.z3cform.layout import FormWrapper
+from zope.lifecycleevent import ObjectModifiedEvent
+from zope.event import notify
 
 logger = logging.getLogger('collective.etherpad')
-_ = i18nmessageid.MessageFactory('collective.etherpad')
 _p = PloneMessageFactory
 
 
@@ -48,6 +49,9 @@ class EtherpadSyncForm(form.Form):
         html = self.etherpad.getHTML(padID=self.padID)
         if html and 'html' in html:
             field.set(self.context, html['html'], mimetype='text/html')
+
+        notify(ObjectModifiedEvent(self.context))
+        self.context.reindexObject()
 
 
 class EtherpadEditView(FormWrapper):
@@ -142,10 +146,13 @@ class EtherpadEditView(FormWrapper):
         #Portal creates a pad in the userGroup
         if self.padID is None:
             self.padID = '%s$%s' % (self.groupID, self.padName)
+            field = self.context.getField(self.fieldname)
+            ptransforms = getToolByName(self.context, 'portal_transforms')
+            text = ptransforms.convertTo('text/plain', field.get(self.context))._data
             self.etherpad.createGroupPad(
                 groupID=self.groupID,
                 padName=self.padName,
-                text=self.context.Description(),
+                text=text,
             )
 
         #Portal starts the session for the user on the group:

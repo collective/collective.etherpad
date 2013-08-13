@@ -365,7 +365,7 @@ class HTTPAPI(object):
                 if 'data' in result:
                     return result['data']
             else:
-                logger.error('code = %(code)s, message = %(message)s' % result)
+                logger.debug('code = %(code)s, message = %(message)s' % result)
 
         return _callable
 

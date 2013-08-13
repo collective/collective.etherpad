@@ -4,6 +4,12 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Reindex when we save pad.
+  [thomasdesvenain]
+
+- Default pad text is collaboration field text, not description field.
+  [thomasdesvenain]
+
 - Set logs to DEBUG.
   [thomasdesvenain]
 
