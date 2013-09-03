@@ -4,6 +4,8 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Refactor API callable to catch exceptions [toutpt]
+
 - Add dexterity support. The field choice is achieved by looking for an 
   IRichText field in the schema. [toutpt]
 

@@ -1,7 +1,9 @@
 #python
 import json
 import logging
-from urllib import urlopen, urlencode
+import traceback
+import urllib2
+import urllib
 
 #zope
 from zope import component
@@ -359,19 +361,39 @@ class HTTPAPI(object):
 
         def _callable(**kwargs):
             kwargs['apikey'] = self.apikey
-            url = self.uri + method + '?' + urlencode(kwargs)
+            url = self.uri + method + '?' + urllib.urlencode(kwargs)
             logger.debug('call %s(%s)' % (method, kwargs))
-            flike = urlopen(url)
-            content = flike.read()
-            logger.debug('-> %s' % content)
-            result = json.loads(content)
-            if result['code'] == 0:
-                if result['message'] != 'ok':
-                    logger.debug('message: %s' % result['message'])
-                if 'data' in result:
-                    return result['data']
+            try:
+                flike = urllib2.urlopen(url)
+            except urllib2.HTTPError, e:
+                logger.error('HTTPError = ' + str(e.code))
+            except urllib2.URLError, e:
+                logger.error('URLError = ' + str(e.reason))
+            except httplib.HTTPException, e:
+                logger.error('HTTPException')
+            except Exception:
+                logger.error('generic exception: ' + traceback.format_exc())
             else:
-                logger.error('code = %(code)s, message = %(message)s' % result)
+                try:
+                    content = flike.read()
+                except IOError, e:
+                    logger.error("can't read the content")
+                else:
+                    try:
+                        result = json.loads(content)
+                    except TypeError, e:
+                        logger.error("type error: " + traceback.format_exc())
+                    except ValueError, e:
+                        logger.error("value error : " + traceback.format_exc())
+                    else:
+                        if result['code'] == 0:
+                            if result['message'] != 'ok':
+                                logger.debug('message: %s' % result['message'])
+                            if 'data' in result:
+                                return result['data']
+                        else:
+                            error = 'code = %(code)s, message = %(message)s'
+                            logger.error(error % result)
 
         return _callable
 
