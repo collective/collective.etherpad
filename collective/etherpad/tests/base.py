@@ -1,6 +1,11 @@
 import transaction
 import unittest2 as unittest
-from collective.etherpad import testing
+from plone.app.testing import TEST_USER_ID, setRoles
+from collective.etherpad.testing import (
+    INTEGRATION,
+    FUNCTIONAL,
+    DEXTERITY_INTEGRATION
+)
 
 
 class UnitTestCase(unittest.TestCase):
@@ -11,7 +16,7 @@ class UnitTestCase(unittest.TestCase):
 
 class IntegrationTestCase(unittest.TestCase):
 
-    layer = testing.INTEGRATION
+    layer = INTEGRATION
 
     def setUp(self):
         super(IntegrationTestCase, self).setUp()
@@ -23,12 +28,17 @@ class IntegrationTestCase(unittest.TestCase):
         self.document = self.portal['test-document']
 
     def setRole(self, role="Member"):
-        testing.setRoles(self.portal, testing.TEST_USER_ID, [role])
+        setRoles(self.portal, TEST_USER_ID, [role])
+
+
+class DxIntegrationTestCase(IntegrationTestCase):
+
+    layer = DEXTERITY_INTEGRATION
 
 
 class FunctionalTestCase(IntegrationTestCase):
 
-    layer = testing.FUNCTIONAL
+    layer = FUNCTIONAL
 
     def setUp(self):
         #we must commit the transaction

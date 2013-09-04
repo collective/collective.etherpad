@@ -1,14 +1,14 @@
 from datetime import datetime
 import unittest2 as unittest
 from collective.etherpad.tests import base, fake
-from collective.etherpad.archetypes import EtherpadEditView, EtherpadSyncForm
+from collective.etherpad.dexterity import EtherpadEditView, EtherpadSyncForm
 
 
-class UnitTestArchetypes(base.UnitTestCase):
+class UnitTestDexterity(base.UnitTestCase):
     """Lets test the api module"""
 
     def setUp(self):
-        super(UnitTestArchetypes, self).setUp()
+        super(UnitTestDexterity, self).setUp()
         self.context = fake.FakeContext()
         self.request = fake.FakeRequest()
         self.view = EtherpadEditView(self.context, self.request)
@@ -24,6 +24,8 @@ class UnitTestArchetypes(base.UnitTestCase):
         self.view.authorMapper = 'toutpt'
         self.view.form_instance = fake.FakeEtherpadSyncForm()
         self.view._portal = fake.FakePortal()
+#        self.view.model = fake.FakeModel
+        self.view.dexterity_fti = fake.FakeFTI(fake.FakeModel)
 
     def test_update(self):
         self.view.update()
@@ -50,11 +52,11 @@ class UnitTestArchetypes(base.UnitTestCase):
         self.assertEqual(session['value'], 's.lHo0Q9krIb1OCFOI')
 
 
-class IntegrationTestArchetypes(base.IntegrationTestCase):
+class IntegrationTestDexterity(base.DxIntegrationTestCase):
     """Here we test integration with Plone, not with etherpad"""
 
     def setUp(self):
-        super(IntegrationTestArchetypes, self).setUp()
+        super(IntegrationTestDexterity, self).setUp()
         self.view = EtherpadEditView(self.document, self.request)
         self.view.etherpad = fake.FakeEtherpad()
 
@@ -99,55 +101,22 @@ class IntegrationTestArchetypes(base.IntegrationTestCase):
         etherpad = fake.FakeEtherpad()
         etherpad.pads['mypad'] = {'html': 'my html'}
         form.padID = 'g.aDAO30LjIDJWvyTU$mypad'
-        html = self.document.getText()
-        self.assertEqual(html, '')
+        html = self.document.text
+        self.assertEqual(html, None)
         form.etherpad = etherpad
         form.padID = 'mypad'
-        form.field = self.document.getField('text')
+        from zope import component
+        from zope import schema
+        from plone.dexterity.interfaces import IDexterityFTI
+        dexterity_fti = component.getUtility(
+            IDexterityFTI,
+            name="Document"
+        )
+        form.field = schema.getFields(dexterity_fti.lookupSchema())['text']
         form.save()
 
-        html = self.document.getText()
-        self.assertEqual(html, 'my html')
-
-
-class VHMIntegrationTestArchetypes(base.IntegrationTestCase):
-    """Here we test integration with Plone, not with etherpad"""
-
-    def setUp(self):
-        super(VHMIntegrationTestArchetypes, self).setUp()
-
-        def wrapped(*args, **kw):
-            sp = getattr(self, 'subpath', None)
-            if sp == "/":
-                return []
-            if sp == "/foo":
-                return ["foo"]
-            return self.request.old_physicalPathToVirtualPath(
-                *args, **kw)
-        setattr(self.request,
-                'old_physicalPathToVirtualPath',
-                self.request.physicalPathToVirtualPath)
-        setattr(self.request,
-                'physicalPathToVirtualPath',
-                wrapped)
-
-    def tearDown(self):
-        setattr(self.request,
-                'physicalPathToVirtualPath',
-                self.request.old_physicalPathToVirtualPath)
-
-    def test_getBasePath(self):
-        view = EtherpadEditView(self.document, self.request)
-        view.etherpad = fake.FakeEtherpad()
-        view.update()
-        # plone in mounted on / on the proxy
-        self.subpath = '/'
-        self.assertEqual(
-            view._getBasePath(), '/pad/')
-        # plone in mounted on /foo on the proxy
-        self.subpath = '/foo'
-        self.assertEqual(
-            view._getBasePath(), '/foo/pad/')
+        html = self.document.text
+        self.assertEqual(html.output, 'my html')
 
 
 def test_suite():

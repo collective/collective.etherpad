@@ -10,12 +10,19 @@ Changelog
 - Default pad text is collaboration field text, not description field.
   [thomasdesvenain]
 
+- Refactor API callable to catch exceptions [toutpt]
+
+- Add dexterity support. The field choice is achieved by looking for an
+  IRichText field in the schema. [toutpt]
+
 - Set logs to DEBUG.
   [thomasdesvenain]
 
 - i18n fixes.
   [thomasdesvenain]
 
+- fix cookie path when behind a proxy (virtualhostmonster)
+  [kiorky]
 
 1.0 (2013-02-14)
 ----------------
