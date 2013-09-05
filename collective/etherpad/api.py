@@ -4,6 +4,7 @@ import logging
 import traceback
 import urllib2
 import urllib
+import httplib
 
 #zope
 from zope import component
@@ -364,7 +365,7 @@ class HTTPAPI(object):
             url = self.uri + method + '?' + urllib.urlencode(kwargs)
             logger.debug('call %s(%s)' % (method, kwargs))
             try:
-                flike = urllib2.urlopen(url)
+                flike = urllib2.urlopen(url, timeout=5)
             except urllib2.HTTPError, e:
                 logger.error('HTTPError = ' + str(e.code))
             except urllib2.URLError, e:
