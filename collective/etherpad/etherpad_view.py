@@ -74,9 +74,15 @@ class EtherpadView(BrowserView):
 
         if self.etherpad is None:
             self.etherpad = HTTPAPI(self.context, self.request)
-            self.etherpad.checkToken()
-        if self.fieldname is None:
-            self.fieldname = self.getEtherpadFieldName()
+            self.etherpad.update()
+            try:
+                self.etherpad.checkToken()
+            except ValueError:
+                status = IStatusMessage(self.request)
+                msg = _(u"Etherpad connection error")
+                status.add(msg)
+                self.etherpad_iframe_url = ""
+                return
         if self.padName is None:
             self.padName = IUUID(self.context)
             logger.debug('set padName to %s' % self.padName)
@@ -109,15 +115,22 @@ class EtherpadView(BrowserView):
 
         #Portal creates a pad in the userGroup
         if self.padID is None:
+            exists = False
             self.padID = '%s$%s' % (self.groupID, self.padName)
-            field = self.context.getField(self.fieldname)
-            ptransforms = getToolByName(self.context, 'portal_transforms')
-            text = ptransforms.convertTo('text/plain', field.get(self.context))._data
-            self.etherpad.createGroupPad(
-                groupID=self.groupID,
-                padName=self.padName,
-                text=text,
-            )
+            pads = self.etherpad.listPads(groupID=self.groupID)
+            if pads:
+                if self.padID in pads.get(u"padIDs", []):
+                    exists = True
+            if not exists:
+                field = self.getEtherpadField()
+                ptransforms = getToolByName(self.context, 'portal_transforms')
+                value = field.get(self.context)
+                text = value and ptransforms.convertTo('text/plain', value)._data or ""
+                self.etherpad.createGroupPad(
+                    groupID=self.groupID,
+                    padName=self.padName,
+                    text=text,
+                )
 
         #Portal starts the session for the user on the group:
         if not self.validUntil:
