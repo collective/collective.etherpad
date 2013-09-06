@@ -1,13 +1,12 @@
 import time
 import logging
-from Acquisition import aq_inner
 from Products.Five.browser import BrowserView
 from Products.CMFCore import permissions
 from zope import component, i18nmessageid
 from zope import schema
 from plone.registry.interfaces import IRegistry
 from collective.etherpad.settings import EtherpadEmbedSettings, EtherpadSettings
-from collective.etherpad.api import HTTPAPI
+from collective.etherpad.api import HTTPAPI, get_pad_id
 from plone.uuid.interfaces import IUUID
 from Products.CMFCore.utils import getToolByName
 from urllib import urlencode
@@ -15,10 +14,10 @@ from Products.CMFPlone import PloneMessageFactory
 from Products.CMFCore.utils import _checkPermission
 from Products.statusmessages.interfaces import IStatusMessage
 
+
 logger = logging.getLogger('collective.etherpad')
 _ = i18nmessageid.MessageFactory('collective.etherpad')
 _p = PloneMessageFactory
-
 
 class EtherpadView(BrowserView):
     """Implement etherpad for Archetypes content types"""
@@ -118,7 +117,7 @@ class EtherpadView(BrowserView):
 
         #Portal creates a pad in the userGroup
         if self.padID is None:
-            self.padID = '%s$%s' % (self.groupID, self.padName)
+            self.padID = get_pad_id(self.groupID, self.padName)
             pads = self.etherpad.listPads(groupID=self.groupID)
             if not (pads and self.padID in pads.get(u"padIDs", [])):
                 field = self.getEtherpadField()

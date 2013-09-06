@@ -1,31 +1,20 @@
 #python
-import time
 import logging
-from urllib import urlencode
 
 #zope
 from Acquisition import aq_inner
-from zope import component
 from zope import interface
-from zope import schema
-from zope import i18nmessageid
 from zope.lifecycleevent import ObjectModifiedEvent
 from zope.event import notify
 from z3c.form import form, field, button
 
-#cmf
-from Products.CMFCore.utils import getToolByName
-
 #plone
-from plone.uuid.interfaces import IUUID
-from plone.registry.interfaces import IRegistry
 from plone.z3cform.layout import FormWrapper
 from Products.CMFPlone import PloneMessageFactory
 
 #internal
-from collective.etherpad.api import HTTPAPI
 from collective.etherpad.etherpad_view import EtherpadView
-from collective.etherpad.settings import EtherpadEmbedSettings, EtherpadSettings
+
 
 logger = logging.getLogger('collective.etherpad')
 _p = PloneMessageFactory
