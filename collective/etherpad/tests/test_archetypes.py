@@ -65,6 +65,7 @@ class IntegrationTestArchetypes(base.IntegrationTestCase):
         self.assertIsNotNone(self.view.portal_registry)
         self.assertIsNotNone(self.view.embed_settings)
         self.assertIsNotNone(self.view.etherpad_settings)
+        self.assertEqual(self.view.etherpad.text, "A text")
         self.assertEqual(self.view.authorMapper, 'test_user_1_')
         uid = self.document.UID()
         self.assertEqual(self.view.padName, uid)
