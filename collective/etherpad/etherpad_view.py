@@ -1,13 +1,12 @@
 import time
 import logging
-from Acquisition import aq_inner
 from Products.Five.browser import BrowserView
 from Products.CMFCore import permissions
 from zope import component, i18nmessageid
 from zope import schema
 from plone.registry.interfaces import IRegistry
 from collective.etherpad.settings import EtherpadEmbedSettings, EtherpadSettings
-from collective.etherpad.api import HTTPAPI
+from collective.etherpad.api import HTTPAPI, get_pad_id
 from plone.uuid.interfaces import IUUID
 from Products.CMFCore.utils import getToolByName
 from urllib import urlencode
@@ -15,10 +14,10 @@ from Products.CMFPlone import PloneMessageFactory
 from Products.CMFCore.utils import _checkPermission
 from Products.statusmessages.interfaces import IStatusMessage
 
+
 logger = logging.getLogger('collective.etherpad')
 _ = i18nmessageid.MessageFactory('collective.etherpad')
 _p = PloneMessageFactory
-
 
 class EtherpadView(BrowserView):
     """Implement etherpad for Archetypes content types"""
@@ -83,6 +82,7 @@ class EtherpadView(BrowserView):
                 status.add(msg)
                 self.etherpad_iframe_url = ""
                 return
+
         if self.padName is None:
             self.padName = IUUID(self.context)
             logger.debug('set padName to %s' % self.padName)
@@ -95,6 +95,7 @@ class EtherpadView(BrowserView):
                 self.authorMapper = member.getId()
                 if self.authorName is None:
                     self.authorName = member.getProperty("fullname")
+
         if self.authorID is None:
             author = self.etherpad.createAuthorIfNotExistsFor(
                 authorMapper=self.authorMapper,
@@ -106,6 +107,7 @@ class EtherpadView(BrowserView):
         #Portal maps the internal userid to an etherpad group:
         if self.groupMapper is None:
             self.groupMapper = self.padName
+
         if self.groupID is None:
             group = self.etherpad.createGroupIfNotExistsFor(
                 groupMapper=self.groupMapper
@@ -115,23 +117,27 @@ class EtherpadView(BrowserView):
 
         #Portal creates a pad in the userGroup
         if self.padID is None:
-            exists = False
-            self.padID = '%s$%s' % (self.groupID, self.padName)
+            self.padID = get_pad_id(self.groupID, self.padName)
             pads = self.etherpad.listPads(groupID=self.groupID)
-            if pads:
-                if self.padID in pads.get(u"padIDs", []):
-                    exists = True
-            if not exists:
+            if not (pads and self.padID in pads.get(u"padIDs", [])):
+                field = self.getEtherpadField()
+                value = field.get(self.context)
+                ptransforms = getToolByName(self.context, 'portal_transforms', None)
+                if ptransforms:
+                    text = value and ptransforms.convertTo('text/plain', value)._data or ""
+                else:
+                    text = ''
                 self.etherpad.createGroupPad(
                     groupID=self.groupID,
                     padName=self.padName,
-                    text=self.context.Description(),
+                    text=text,
                 )
 
         #Portal starts the session for the user on the group:
         if not self.validUntil:
             #24 hours in unix timestamp in seconds
             self.validUntil = str(int(time.time() + 24 * 60 * 60))
+
         if not self.sessionID:
             session = self.etherpad.createSession(
                 groupID=self.groupID,
@@ -140,6 +146,7 @@ class EtherpadView(BrowserView):
             )
             if session:
                 self.sessionID = session['sessionID']
+
             self._addSessionCookie()
 
         if self.etherpad_iframe_url is None:
@@ -151,6 +158,7 @@ class EtherpadView(BrowserView):
                 value = getattr(self.embed_settings, field)
                 if value is not None:
                     query[field] = value
+
             query['lang'] = self.portal_state.language()
             equery = urlencode(query)
             equery = equery.replace('True', 'true').replace('False', 'false')
@@ -162,6 +170,7 @@ class EtherpadView(BrowserView):
         """To be overloaded in unit tests"""
         if not getattr(self, '_portal', None):
             self._portal = self.portal_state.portal()
+
         return self._portal
 
     def _getBasePath(self):
@@ -177,6 +186,7 @@ class EtherpadView(BrowserView):
         padvpath = padvpath.replace('//', '/')
         if not padvpath.startswith('/'):
             padvpath = '/' + padvpath
+
         return padvpath
 
     def _addSessionCookie(self):
@@ -196,4 +206,5 @@ class EtherpadView(BrowserView):
         html = self.etherpad.getHTML(padID=self.padID)
         if html and 'html' in html:
             return html["html"]
+
         return ""

@@ -1,32 +1,22 @@
 #python
-import time
 import logging
-from urllib import urlencode
 
 #zope
 from Acquisition import aq_inner
-from zope import component
 from zope import interface
-from zope import schema
+from zope.lifecycleevent import ObjectModifiedEvent
+from zope.event import notify
 from z3c.form import form, field, button
-from zope import i18nmessageid
-
-#cmf
-from Products.CMFCore.utils import getToolByName
 
 #plone
-from plone.uuid.interfaces import IUUID
-from plone.registry.interfaces import IRegistry
+from plone.z3cform.layout import FormWrapper
 from Products.CMFPlone import PloneMessageFactory
 
 #internal
-from collective.etherpad.api import HTTPAPI
-from collective.etherpad.settings import EtherpadEmbedSettings, EtherpadSettings
-from plone.z3cform.layout import FormWrapper
 from collective.etherpad.etherpad_view import EtherpadView
 
+
 logger = logging.getLogger('collective.etherpad')
-_ = i18nmessageid.MessageFactory('collective.etherpad')
 _p = PloneMessageFactory
 
 
@@ -48,6 +38,9 @@ class EtherpadSyncForm(form.Form):
         html = self.etherpad.getHTML(padID=self.padID)
         if html and 'html' in html:
             self.field.set(self.context, html['html'], mimetype='text/html')
+
+        notify(ObjectModifiedEvent(self.context))
+        self.context.reindexObject()
 
 
 class EtherpadEditView(EtherpadView, FormWrapper):

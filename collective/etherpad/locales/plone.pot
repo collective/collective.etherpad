@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2013-08-13 14:06+0000\n"
+"POT-Creation-Date: 2013-08-13 14:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,17 +15,10 @@ msgstr ""
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: collective.etherpad\n"
+"Domain: plone\n"
 
-#: ./settings.py:19
-msgid "API KEY"
+#: ./profiles/default/types/Document.xml
+#: ./profiles/default/types/Event.xml
+#: ./profiles/default/types/News_Item.xml
+msgid "Collaborate"
 msgstr ""
-
-#: ./settings.py:15
-msgid "Etherpad API PATH"
-msgstr ""
-
-#: ./settings.py:10
-msgid "Etherpad PATH"
-msgstr ""
-

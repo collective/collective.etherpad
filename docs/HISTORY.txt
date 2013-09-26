@@ -4,9 +4,19 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Added a timeout on api url requests
+  so that task is not blocked when we have a network issue.
+  [thomasdesvenain]
+
+- Reindex when we save the pad.
+  [thomasdesvenain]
+
+- Default pad text is collaboration field text, not description field.
+  [thomasdesvenain]
+
 - Refactor API callable to catch exceptions [toutpt]
 
-- Add dexterity support. The field choice is achieved by looking for an 
+- Add dexterity support. The field choice is achieved by looking for an
   IRichText field in the schema. [toutpt]
 
 - Set logs to DEBUG.

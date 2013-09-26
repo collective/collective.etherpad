@@ -1,7 +1,7 @@
 Introduction
 ============
 
-This addon integrate etherpad_ into the Plone CMS. It is a way to get 
+This addon integrate etherpad_ into the Plone CMS. It is a way to get
 Collaborating in really real-time on document.
 
 About Etherpad
@@ -29,6 +29,11 @@ You will probably have to install etherpad dependencies: `NodeJS
 <http://nodejs.org/>`_ and `NPM <https://npmjs.org/>`. Under Linux, type ::
 
   ``apt-get install nodejs npm``
+
+Running etherpad needs curl. Under Linux, type::
+
+  ``apt-get install curl``
+
 
 How to configure
 ================

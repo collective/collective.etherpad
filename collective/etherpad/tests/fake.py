@@ -19,6 +19,9 @@ class FakeField(object):
     def set(self, context, value, **kwargs):
         setattr(self.context, self.name, value)
 
+    def get(self, context):
+        getattr(context, self.name)
+
 
 class FakeAcquisition(object):
     def __init__(self):
@@ -37,7 +40,7 @@ class FakeContext(object):
         self.aq_inner.aq_explicit = self
         self._modified = "modified date"
         self.remoteUrl = ''  # fake Link
-        self.text = ""
+        self.text = "<b>A text</b>"
         self.primary_field = FakeField(self, 'text')
         self.portal_type = "document"
 
@@ -136,7 +139,7 @@ class FakeEtherpad(object):
         return {"groupID": "g.aDAO30LjIDJWvyTU"}
 
     def createGroupPad(self, groupID=None, padName=None, text=None):
-        return
+        self.text = text
 
     def createSession(self, groupID=None, authorID=None, validUntil=None):
         return {"sessionID": "s.lHo0Q9krIb1OCFOI"}

@@ -4,6 +4,7 @@ import logging
 import traceback
 import urllib2
 import urllib
+import httplib
 
 #zope
 from zope import component
@@ -339,8 +340,10 @@ class HTTPAPI(object):
     def update(self):
         if self._registry is None:
             self._registry = component.getUtility(IRegistry)
+
         if self._settings is None:
             self._settings = self._registry.forInterface(EtherpadSettings)
+
         if self._portal_url is None:
             #code stolen to plone.api
             closest_site = getSite()
@@ -348,23 +351,28 @@ class HTTPAPI(object):
                 for potential_portal in closest_site.aq_chain:
                     if ISiteRoot in interface.providedBy(potential_portal):
                         self._portal_url = potential_portal.absolute_url()
+
         if self.uri is None:
             basepath = self._settings.basepath
             apiversion = self._settings.apiversion
             self.uri = '%s%sapi/%s/' % (self._portal_url, basepath, apiversion)
             logger.debug(self.uri)
+
         if self.apikey is None:
             self.apikey = self._settings.apikey
 
     def _get_api(self, method):
         self.update()
 
-        def _callable(**kwargs):
+        def _callable(*args, **kwargs):
+            if len(args) > 0:
+                raise TypeError("Etherpad API methods must be called with keywords args only")
+
             kwargs['apikey'] = self.apikey
             url = self.uri + method + '?' + urllib.urlencode(kwargs)
             logger.debug('call %s(%s)' % (method, kwargs))
             try:
-                flike = urllib2.urlopen(url)
+                flike = urllib2.urlopen(url, timeout=5)
             except urllib2.HTTPError, e:
                 logger.error('HTTPError = ' + str(e.code))
             except urllib2.URLError, e:
@@ -393,11 +401,16 @@ class HTTPAPI(object):
                                 return result['data']
                         else:
                             error = 'code = %(code)s, message = %(message)s'
-                            logger.error(error % result)
+                            logger.debug(error % result)
 
         return _callable
 
     def __getattribute__(self, name):
         if name in IEtherpadLiteClient.names():
             return self._get_api(name)
+
         return object.__getattribute__(self, name)
+
+
+def get_pad_id(groupID, padName):
+    return "%s$%s" % (groupID, padName)

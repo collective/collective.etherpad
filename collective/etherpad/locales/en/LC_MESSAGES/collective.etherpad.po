@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: collective.etherpad\n"
-"POT-Creation-Date: 2010-11-10 11:05+0000\n"
+"POT-Creation-Date: 2013-08-13 14:06+0000\n"
 "PO-Revision-Date: 2008-02-04 18:00+0000\n"
 "Last-Translator: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
 "Language-Team: Plone i18n <plone-i18n@lists.sourceforge.net>\n"
@@ -14,4 +14,16 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: collective.etherpad\n"
+
+#: ./settings.py:19
+msgid "API KEY"
+msgstr ""
+
+#: ./settings.py:15
+msgid "Etherpad API PATH"
+msgstr ""
+
+#: ./settings.py:10
+msgid "Etherpad PATH"
+msgstr ""
 

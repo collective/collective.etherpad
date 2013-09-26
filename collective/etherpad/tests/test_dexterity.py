@@ -68,6 +68,7 @@ class IntegrationTestDexterity(base.DxIntegrationTestCase):
         self.assertIsNotNone(self.view.embed_settings)
         self.assertIsNotNone(self.view.etherpad_settings)
         self.assertEqual(self.view.authorMapper, 'test_user_1_')
+        self.assertEqual(self.view.etherpad.text, "A text")
         uid = self.document.UID()
         self.assertEqual(self.view.padName, uid)
         self.assertEqual(self.view.groupMapper, uid)
