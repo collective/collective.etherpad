@@ -365,8 +365,9 @@ class HTTPAPI(object):
         self.update()
 
         def _callable(*args, **kwargs):
+            msg = "Etherpad API methods must be called with keywords args only"
             if len(args) > 0:
-                raise TypeError("Etherpad API methods must be called with keywords args only")
+                raise TypeError(msg)
 
             kwargs['apikey'] = self.apikey
             url = self.uri + method + '?' + urllib.urlencode(kwargs)

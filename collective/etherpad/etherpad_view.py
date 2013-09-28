@@ -5,7 +5,8 @@ from Products.CMFCore import permissions
 from zope import component, i18nmessageid
 from zope import schema
 from plone.registry.interfaces import IRegistry
-from collective.etherpad.settings import EtherpadEmbedSettings, EtherpadSettings
+from collective.etherpad.settings import EtherpadEmbedSettings
+from collective.etherpad.settings import EtherpadSettings
 from collective.etherpad.api import HTTPAPI, get_pad_id
 from plone.uuid.interfaces import IUUID
 from Products.CMFCore.utils import getToolByName
@@ -18,6 +19,7 @@ from Products.statusmessages.interfaces import IStatusMessage
 logger = logging.getLogger('collective.etherpad')
 _ = i18nmessageid.MessageFactory('collective.etherpad')
 _p = PloneMessageFactory
+
 
 class EtherpadView(BrowserView):
     """Implement etherpad for Archetypes content types"""
@@ -122,9 +124,14 @@ class EtherpadView(BrowserView):
             if not (pads and self.padID in pads.get(u"padIDs", [])):
                 field = self.getEtherpadField()
                 value = field.get(self.context)
-                ptransforms = getToolByName(self.context, 'portal_transforms', None)
+                ptransforms = getToolByName(
+                    self.context, 'portal_transforms', None
+                )
                 if ptransforms:
-                    text = value and ptransforms.convertTo('text/plain', value)._data or ""
+                    if value:
+                        text = ptransforms.convertTo('text/plain', value)._data
+                    else:
+                        text = ""
                 else:
                     text = ''
                 self.etherpad.createGroupPad(

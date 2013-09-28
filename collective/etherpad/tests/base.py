@@ -23,7 +23,9 @@ class IntegrationTestCase(unittest.TestCase):
         self.portal = self.layer['portal']
         self.request = self.layer['request']
         self.setRole("Manager")
-        self.portal.invokeFactory('Document', 'test-document', text="<b>A text</b>")
+        self.portal.invokeFactory(
+            'Document', 'test-document', text="<b>A text</b>"
+        )
         self.setRole("Member")
         self.document = self.portal['test-document']
 
