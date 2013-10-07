@@ -4,19 +4,13 @@ Changelog
 1.1.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fixed tests.
 
 
 1.1.2 (2013-09-26)
 ------------------
 
-- Nothing changed yet.
-
-
-1.1.1 (2013-09-26)
-------------------
-
-- Fix packaging
+- Fix packaging.
 
 
 1.1 (2013-09-26)

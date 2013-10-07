@@ -101,7 +101,7 @@ class IntegrationTestArchetypes(base.IntegrationTestCase):
         etherpad.pads['mypad'] = {'html': 'my html'}
         form.padID = 'g.aDAO30LjIDJWvyTU$mypad'
         html = self.document.getText()
-        self.assertEqual(html, '')
+        self.assertEqual(html, '<b>A text</b>')
         form.etherpad = etherpad
         form.padID = 'mypad'
         form.field = self.document.getField('text')
