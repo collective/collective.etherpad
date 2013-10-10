@@ -122,15 +122,16 @@ class EtherpadView(BrowserView):
             self.padID = get_pad_id(self.groupID, self.padName)
             pads = self.etherpad.listPads(groupID=self.groupID)
             if not (pads and self.padID in pads.get(u"padIDs", [])):
-                field = self.getEtherpadField()
-                value = field.get(self.context)
-                ptransforms = getToolByName(
-                    self.context, 'portal_transforms', None
-                )
-                if ptransforms:
-                    if value:
+                #create a pad and try to load text from field:
+                if hasattr(self, 'getEtherpadField'):
+                    field = self.getEtherpadField()
+                    text = field.get(self.context)
+                    ptransforms = getToolByName(
+                        self.context, 'portal_transforms', None
+                    )
+                    if ptransforms and text:
                         text = ptransforms.convertTo('text/plain', value)._data
-                    else:
+                    if text is None:
                         text = ""
                 else:
                     text = ''

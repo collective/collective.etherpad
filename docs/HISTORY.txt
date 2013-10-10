@@ -5,7 +5,9 @@ Changelog
 ------------------
 
 - Fixed tests.
-
+  [tdesvenain]
+- Let etherpad_view.EtherpadView working without the need of getEtherpadField
+  [toutpt]
 
 1.1.2 (2013-09-26)
 ------------------
