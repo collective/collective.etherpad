@@ -130,7 +130,7 @@ class EtherpadView(BrowserView):
                         self.context, 'portal_transforms', None
                     )
                     if ptransforms and text:
-                        text = ptransforms.convertTo('text/plain', value)._data
+                        text = ptransforms.convertTo('text/plain', text)._data
                     if text is None:
                         text = ""
                 else:
