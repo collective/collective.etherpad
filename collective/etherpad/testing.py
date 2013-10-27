@@ -12,7 +12,9 @@ class DexterityLayer(PloneWithPackageLayer):
     def setUpZCMLFiles(self):
         super(DexterityLayer, self).setUpZCMLFiles()
         import plone.app.contenttypes
+        import plone.app.dexterity
 #        import collective.js.jqueryui
+        self.loadZCML("configure.zcml", package=plone.app.dexterity)
         self.loadZCML("configure.zcml", package=plone.app.contenttypes)
 #        self.loadZCML("configure.zcml", package=collective.js.jqueryui)
 
