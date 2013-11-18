@@ -84,38 +84,16 @@ class EtherpadView(BrowserView):
                 status.add(msg)
                 self.etherpad_iframe_url = ""
                 return
+        self._updatePad()
+        self._updateAuthor()
+        self._updateGroup()
+        self._updateSession()
+        self._updateIframe()
 
+    def _updatePad(self):
         if self.padName is None:
             self.padName = IUUID(self.context)
             logger.debug('set padName to %s' % self.padName)
-
-        #Portal maps the internal userid to an etherpad author.
-        if self.authorMapper is None:
-            mt = getToolByName(self.context, 'portal_membership')
-            member = mt.getAuthenticatedMember()
-            if member is not None:
-                self.authorMapper = member.getId()
-                if self.authorName is None:
-                    self.authorName = member.getProperty("fullname")
-
-        if self.authorID is None:
-            author = self.etherpad.createAuthorIfNotExistsFor(
-                authorMapper=self.authorMapper,
-                name=self.authorName
-            )
-            if author:
-                self.authorID = author['authorID']
-
-        #Portal maps the internal userid to an etherpad group:
-        if self.groupMapper is None:
-            self.groupMapper = self.padName
-
-        if self.groupID is None:
-            group = self.etherpad.createGroupIfNotExistsFor(
-                groupMapper=self.groupMapper
-            )
-            if group:
-                self.groupID = group['groupID']
 
         #Portal creates a pad in the userGroup
         if self.padID is None:
@@ -141,6 +119,37 @@ class EtherpadView(BrowserView):
                     text=text,
                 )
 
+    def _updateAuthor(self):
+        #Portal maps the internal userid to an etherpad author.
+        if self.authorMapper is None:
+            mt = getToolByName(self.context, 'portal_membership')
+            member = mt.getAuthenticatedMember()
+            if member is not None:
+                self.authorMapper = member.getId()
+                if self.authorName is None:
+                    self.authorName = member.getProperty("fullname")
+
+        if self.authorID is None:
+            author = self.etherpad.createAuthorIfNotExistsFor(
+                authorMapper=self.authorMapper,
+                name=self.authorName
+            )
+            if author:
+                self.authorID = author['authorID']
+
+    def _updateGroup(self):
+        #Portal maps the internal userid to an etherpad group:
+        if self.groupMapper is None:
+            self.groupMapper = self.padName
+
+        if self.groupID is None:
+            group = self.etherpad.createGroupIfNotExistsFor(
+                groupMapper=self.groupMapper
+            )
+            if group:
+                self.groupID = group['groupID']
+
+    def _updateSession(self):
         #Portal starts the session for the user on the group:
         if not self.validUntil:
             #24 hours in unix timestamp in seconds
@@ -157,6 +166,7 @@ class EtherpadView(BrowserView):
 
             self._addSessionCookie()
 
+    def _updateIframe(self):
         if self.etherpad_iframe_url is None:
             #TODO: made this configuration with language and stuff
             url = self.portal_state.portal_url()

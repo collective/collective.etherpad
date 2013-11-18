@@ -345,12 +345,7 @@ class HTTPAPI(object):
             self._settings = self._registry.forInterface(EtherpadSettings)
 
         if self._portal_url is None:
-            #code stolen to plone.api
-            closest_site = getSite()
-            if closest_site is not None:
-                for potential_portal in closest_site.aq_chain:
-                    if ISiteRoot in interface.providedBy(potential_portal):
-                        self._portal_url = potential_portal.absolute_url()
+            self._portal_url = self._getPortalUrl()
 
         if self.uri is None:
             basepath = self._settings.basepath
@@ -360,6 +355,14 @@ class HTTPAPI(object):
 
         if self.apikey is None:
             self.apikey = self._settings.apikey
+
+    def _getPortalUrl(self):
+        #code stolen to plone.api
+        closest_site = getSite()
+        if closest_site is not None:
+            for potential_portal in closest_site.aq_chain:
+                if ISiteRoot in interface.providedBy(potential_portal):
+                    return potential_portal.absolute_url()
 
     def _get_api(self, method):
         self.update()
