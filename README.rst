@@ -13,8 +13,21 @@ in really real-time powered by Node.js
 How to install
 ==============
 
-.. image:: https://secure.travis-ci.org/toutpt/collective.etherpad.png
-    :target: http://travis-ci.org/toutpt/collective.etherpad
+.. image:: https://pypip.in/v/collective.etherpad/badge.png
+    :target: https://crate.io/packages/collective.etherpad/
+    :alt: Latest PyPI version
+
+.. image:: https://pypip.in/d/collective.etherpad/badge.png
+    :target: https://crate.io/packages/collective.etherpad/
+    :alt: Number of PyPI downloads
+
+.. image:: https://secure.travis-ci.org/collective/collective.etherpad.png
+    :target: http://travis-ci.org/#!/collective/collective.etherpad
+
+.. image:: https://coveralls.io/repos/collective/collective.etherpad/badge.png?branch=master
+    :alt: Coverage
+    :target: https://coveralls.io/r/collective/collective.etherpad
+
 
 This addon can be installed as any other Plone addons. Please follow the
 official documentation_.
